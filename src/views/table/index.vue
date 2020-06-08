@@ -8,7 +8,59 @@
       <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         新增
       </el-button>
+      <el-button style="margin-left: 10px;" type="warning" icon="el-icon-refresh" @click="handleReset">
+        重置
+      </el-button>
     </div>
+    <!--新增/编辑 -->
+    <el-dialog title="新增数据库" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
+      <el-form ref="addDataBase" :model="dataBase" label-width="60px" size="medium">
+        <el-form-item label="名称" prop="dataBaseName">
+          <el-input
+            v-model="dataBase.dataBaseName"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库名称"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="地址" prop="dataBaseUrl">
+          <el-input
+            v-model="dataBase.dataBaseUrl"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库地址"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="类型" prop="dataBaseType">
+          <el-input
+            v-model="dataBase.dataBaseType"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库类型"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="用户名" prop="userName">
+          <el-input
+            v-model="dataBase.userName"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库用户名"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="dataBase.password"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库密码"
+            show-password
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="dateBaseAdd">确定</el-button>
+          <el-button @click="dateBaseCancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
     <!--表格渲染-->
     <el-table
       v-loading="listLoading"
@@ -60,62 +112,13 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="small" @click="handleUpdate">编辑</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
           <el-button style="margin-right: 10px;" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页组件-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getDataBaseList" />
-    <!--新增-->
-    <el-dialog title="新增数据库" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
-      <el-form ref="addDataBase" :model="dataBase" label-width="60px" size="medium">
-        <el-form-item label="名称" prop="dataBaseName">
-          <el-input
-            v-model="dataBase.dataBaseName"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入数据库名称"
-            suffix-icon="el-icon-date"
-          />
-        </el-form-item>
-        <el-form-item label="地址" prop="dataBaseUrl">
-          <el-input
-            v-model="dataBase.dataBaseUrl"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入数据库地址"
-            suffix-icon="el-icon-date"
-          />
-        </el-form-item>
-        <el-form-item label="类型" prop="dataBaseType">
-          <el-input
-            v-model="dataBase.dataBaseType"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入数据库类型"
-            suffix-icon="el-icon-date"
-          />
-        </el-form-item>
-        <el-form-item label="用户名" prop="userName">
-          <el-input
-            v-model="dataBase.userName"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入数据库用户名"
-            suffix-icon="el-icon-date"
-          />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="dataBase.password"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入数据库密码"
-            show-password
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="dateBaseAdd">确定</el-button>
-          <el-button @click="dateBaseCancel">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </div>
 </template>
 
@@ -131,9 +134,9 @@ export default {
     return {
       total: 0,
       listLoading: true,
+      page: 1,
+      limit: 10,
       listQuery: {
-        page: 1,
-        limit: 20,
         dataBaseName: ''
       },
       dialogFormVisible: false,
@@ -153,19 +156,18 @@ export default {
   methods: {
     getDataBaseList() {
       this.listLoading = true
-      getDataBaseList(this.listQuery).then(response => {
+      getDataBaseList(this.listQuery, this.page, this.limit).then(response => {
         this.list = response.data.list
-        console.log(response.data)
         this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        }, 0.5 * 1000)
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
+      this.page = 1
       this.getDataBaseList()
     },
     handleCreate() {
@@ -177,12 +179,17 @@ export default {
     dateBaseAdd() {
       alert('新增')
     },
-    handleUpdate() {
-      alert('编辑')
+    handleUpdate(data) {
+      this.dialogFormVisible = true
+      this.dataBase = data
+    },
+    handleReset() {
+      this.listQuery = {}
+      this.getDataBaseList()
     },
     dateBaseCancel() {
       this.dialogFormVisible = false
-      this.dataBase = ''
+      this.dataBase = {}
     }
   }
 }
