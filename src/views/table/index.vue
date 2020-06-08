@@ -1,84 +1,49 @@
 <template>
   <div class="app-container">
-    <!--表单组件-->
-    <!--<el-dialog append-to-body :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="500px">
-      <el-form ref="form" inline :model="form" :rules="rules" size="small" label-width="80px">
-        <el-form-item label="部门名称" prop="name">
-          <el-input v-model="form.name" style="width: 370px;" />
-        </el-form-item>
-        <el-form-item label="部门排序" prop="deptSort">
-          <el-input-number
-            v-model.number="form.deptSort"
-            :min="0"
-            :max="999"
-            controls-position="right"
-            style="width: 370px;"
-          />
-        </el-form-item>
-        <el-form-item label="顶级部门">
-          <el-radio-group v-model="form.isTop" style="width: 140px">
-            <el-radio label="1">是</el-radio>
-            <el-radio label="0">否</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="状态" prop="enabled">
-          <el-radio v-for="item in dict.dept_status" :key="item.id" v-model="form.enabled" :label="item.value">{{ item.label }}</el-radio>
-        </el-form-item>
-        <el-form-item v-if="form.isTop === '0'" style="margin-bottom: 0;" label="上级部门" prop="pid">
-          <treeselect
-            v-model="form.pid"
-            :load-options="loadDepts"
-            :options="depts"
-            style="width: 370px;"
-            placeholder="选择上级类目"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="text" @click="crud.cancelCU">取消</el-button>
-        <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
-      </div>
-    </el-dialog>-->
+    <div class="filter-container">
+      <el-input v-model="listQuery.dataBaseName" clearable size="medium" placeholder="请输入数据库名称" style="width: 200px;" class="filter-item" />
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+        搜索
+      </el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+        新增
+      </el-button>
+    </div>
+    <!--表格渲染-->
     <el-table
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
-      border
       fit
       highlight-current-row
-      size="medium "
+      size="medium"
     >
       <el-table-column align="center" label="主键id" width="95">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
       </el-table-column>
-      <el-table-column label="数据库名称" width="110" align="center">
+      <el-table-column label="数据库名称" width="150" align="center">
         <template slot-scope="scope">
           {{ scope.row.dataBaseName }}
         </template>
       </el-table-column>
-      <el-table-column label="数据库地址" width="110" align="center">
+      <el-table-column label="数据库地址" width="250" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.dataBaseUrl }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="数据库类型" width="110" align="center">
+      <el-table-column label="数据库类型" width="150" align="center">
         <template slot-scope="scope">
           {{ scope.row.dataBaseType }}
         </template>
       </el-table-column>
-      <el-table-column label="数据库驱动" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.dataBaseDiver }}
-        </template>
-      </el-table-column>
-      <el-table-column label="用户名" width="110" align="center">
+      <el-table-column label="用户名" width="150" align="center">
         <template slot-scope="scope">
           {{ scope.row.userName }}
         </template>
       </el-table-column>
-      <el-table-column label="密码" width="110" align="center">
+      <el-table-column label="密码" width="150" align="center">
         <template slot-scope="scope">
           {{ scope.row.password }}
         </template>
@@ -91,45 +56,133 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        width="100"
+        width="400"
         align="center"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
-          <el-button type="text" size="small">编辑</el-button>
+          <el-button type="primary" icon="el-icon-edit" size="small" @click="handleUpdate">编辑</el-button>
+          <el-button style="margin-right: 10px;" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页组件-->
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getDataBaseList" />
+    <!--新增-->
+    <el-dialog title="新增数据库" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
+      <el-form ref="addDataBase" :model="dataBase" label-width="60px" size="medium">
+        <el-form-item label="名称" prop="dataBaseName">
+          <el-input
+            v-model="dataBase.dataBaseName"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库名称"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="地址" prop="dataBaseUrl">
+          <el-input
+            v-model="dataBase.dataBaseUrl"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库地址"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="类型" prop="dataBaseType">
+          <el-input
+            v-model="dataBase.dataBaseType"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库类型"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="用户名" prop="userName">
+          <el-input
+            v-model="dataBase.userName"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库用户名"
+            suffix-icon="el-icon-date"
+          />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input
+            v-model="dataBase.password"
+            :autosize="{ minRows: 2, maxRows: 4}"
+            placeholder="请输入数据库密码"
+            show-password
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="dateBaseAdd">确定</el-button>
+          <el-button @click="dateBaseCancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/table'
-import CRUD, { presenter, header, form } from '@crud/crud'
-import pagination from '@crud/Pagination'
-import rrOperation from '@crud/RR.operation'
-import udOperation from '@crud/UD.operation'
+import { getDataBaseList } from '@/api/table'
+import waves from '@/directive/waves' // waves directive
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
+  components: { Pagination },
+  directives: { waves },
   data() {
     return {
-      list: null,
-      listLoading: true
+      total: 0,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        dataBaseName: ''
+      },
+      dialogFormVisible: false,
+      list: [],
+      dataBase: {
+        dataBaseName: '',
+        dataBaseType: '0',
+        dataBaseUrl: '',
+        userName: '',
+        password: ''
+      }
     }
   },
   created() {
-    this.fetchData()
+    this.getDataBaseList()
   },
   methods: {
-    fetchData() {
+    getDataBaseList() {
       this.listLoading = true
-      getList().then(response => {
+      getDataBaseList(this.listQuery).then(response => {
         this.list = response.data.list
-        this.listLoading = false
+        console.log(response.data)
+        this.total = response.data.total
+
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
       })
     },
-    handleClick(data) {
-      alert(data)
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getDataBaseList()
+    },
+    handleCreate() {
+      this.dialogFormVisible = true
+    },
+    handleDelete(data) {
+      alert('删除id' + data)
+    },
+    dateBaseAdd() {
+      alert('新增')
+    },
+    handleUpdate() {
+      alert('编辑')
+    },
+    dateBaseCancel() {
+      this.dialogFormVisible = false
+      this.dataBase = ''
     }
   }
 }

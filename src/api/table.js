@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 
-export function getList(data) {
+export function getDataBaseList(data) {
+  console.log(data)
   return request({
-    url: '/api/data/base/page',
+    url: '/api/data/base/page?current=' + data.page + '&pageSize=' + data.limit,
     method: 'post',
     data
   })
