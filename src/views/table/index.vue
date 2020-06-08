@@ -87,7 +87,7 @@
       </el-table-column>
       <el-table-column label="数据库类型" width="150" align="center">
         <template slot-scope="scope">
-          {{ scope.row.dataBaseType }}
+          {{ baseTypes[scope.row.dataBaseType] }}
         </template>
       </el-table-column>
       <el-table-column label="用户名" width="150" align="center">
@@ -141,6 +141,12 @@ export default {
       },
       dialogFormVisible: false,
       list: [],
+      baseTypes: {
+        '0': 'Mysql',
+        '1': 'SqlServer1',
+        '2': 'Postgresql',
+        '3': 'Oracle'
+      },
       dataBase: {
         dataBaseName: '',
         dataBaseType: '0',
@@ -159,7 +165,6 @@ export default {
       getDataBaseList(this.listQuery, this.page, this.limit).then(response => {
         this.list = response.data.list
         this.total = response.data.total
-
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
