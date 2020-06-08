@@ -32,12 +32,23 @@
           />
         </el-form-item>
         <el-form-item label="类型" prop="dataBaseType">
-          <el-input
+          <!-- <el-input
             v-model="dataBase.dataBaseType"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入数据库类型"
             suffix-icon="el-icon-date"
-          />
+          />-->
+          <el-select
+            v-model="dataBase.dataBaseType"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in baseTypes"
+              :key="item.index"
+              :label="item"
+              :value="item.key"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="用户名" prop="userName">
           <el-input
@@ -142,14 +153,14 @@ export default {
       dialogFormVisible: false,
       list: [],
       baseTypes: {
-        '0': 'Mysql',
-        '1': 'SqlServer1',
-        '2': 'Postgresql',
-        '3': 'Oracle'
+        0: 'Mysql',
+        1: 'SqlServer',
+        2: 'Postgresql',
+        3: 'Oracle'
       },
       dataBase: {
         dataBaseName: '',
-        dataBaseType: '0',
+        dataBaseType: 0,
         dataBaseUrl: '',
         userName: '',
         password: ''
@@ -182,7 +193,7 @@ export default {
       alert('删除id' + data)
     },
     dateBaseAdd() {
-      alert('新增')
+      console.log(this.dataBase)
     },
     handleUpdate(data) {
       this.dialogFormVisible = true
