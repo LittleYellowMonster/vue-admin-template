@@ -13,14 +13,20 @@
       </el-button>
     </div>
     <!--新增/编辑 -->
-    <el-dialog title="新增数据库" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
-      <el-form ref="addDataBase" :model="dataBase" label-width="60px" size="medium">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
+      <el-form
+        ref="dataBase"
+        :rules="rules"
+        :model="dataBase"
+        label-width="70px"
+        size="medium"
+        label-position="left"
+      >
         <el-form-item label="名称" prop="dataBaseName">
           <el-input
             v-model="dataBase.dataBaseName"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入数据库名称"
-            suffix-icon="el-icon-date"
           />
         </el-form-item>
         <el-form-item label="地址" prop="dataBaseUrl">
@@ -28,34 +34,29 @@
             v-model="dataBase.dataBaseUrl"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入数据库地址"
-            suffix-icon="el-icon-date"
-          />
+          >
+            <template slot="prepend">Http://</template>
+          </el-input>
         </el-form-item>
         <el-form-item label="类型" prop="dataBaseType">
-          <!-- <el-input
-            v-model="dataBase.dataBaseType"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            placeholder="请输入数据库类型"
-            suffix-icon="el-icon-date"
-          />-->
           <el-select
             v-model="dataBase.dataBaseType"
+            :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请选择"
           >
             <el-option
-              v-for="item in baseTypes"
-              :key="item.index"
-              :label="item"
-              :value="item.key"
+              v-for="item in dataBaseTypes"
+              :key="item.dataBaseType"
+              :label="item.baseTypeName"
+              :value="item.dataBaseType"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="用户名" prop="userName">
+        <el-form-item label="用户名" prop="userName" align="center">
           <el-input
             v-model="dataBase.userName"
-            :autosize="{ minRows: 2, maxRows: 4}"
+            :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="请输入数据库用户名"
-            suffix-icon="el-icon-date"
           />
         </el-form-item>
         <el-form-item label="密码" prop="password">
@@ -67,8 +68,8 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="dateBaseAdd">确定</el-button>
-          <el-button @click="dateBaseCancel">取消</el-button>
+          <el-button type="primary" @click="dialogStatus==='create'?createData('dataBase'):updateData('dataBase')">确定</el-button>
+          <el-button @click="dialogFormVisible = false">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -98,7 +99,7 @@
       </el-table-column>
       <el-table-column label="数据库类型" width="150" align="center">
         <template slot-scope="scope">
-          {{ baseTypes[scope.row.dataBaseType] }}
+          {{ dataBaseTypes[scope.row.dataBaseType].baseTypeName }}
         </template>
       </el-table-column>
       <el-table-column label="用户名" width="150" align="center">
@@ -134,7 +135,7 @@
 </template>
 
 <script>
-import { getDataBaseList } from '@/api/table'
+import { getDataBaseList, createDataBase, updateDataBase } from '@/api/table'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -152,18 +153,41 @@ export default {
       },
       dialogFormVisible: false,
       list: [],
-      baseTypes: {
-        0: 'Mysql',
-        1: 'SqlServer',
-        2: 'Postgresql',
-        3: 'Oracle'
-      },
+      dataBaseTypes: [
+        { 'dataBaseType': 0, 'baseTypeName': 'Mysql' },
+        { 'dataBaseType': 1, 'baseTypeName': 'SqlServer' },
+        { 'dataBaseType': 2, 'baseTypeName': 'Postgresql' },
+        { 'dataBaseType': 3, 'baseTypeName': 'Oracle' }
+      ],
       dataBase: {
         dataBaseName: '',
         dataBaseType: 0,
         dataBaseUrl: '',
         userName: '',
         password: ''
+      },
+      dialogStatus: '',
+      textMap: {
+        update: '编辑数据库',
+        create: '新增数据库'
+      },
+      rules: {
+        dataBaseName: [
+          { required: true, message: '名称不能为空', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        dataBaseUrl: [
+          { required: true, message: '地址不能为空', trigger: 'blur' }
+        ],
+        dataBaseType: [
+          { required: true, message: '请选择类型', trigger: 'change' }
+        ],
+        userName: [
+          { required: true, message: '用户名不能为空', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '密码不能为空', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -176,6 +200,7 @@ export default {
       getDataBaseList(this.listQuery, this.page, this.limit).then(response => {
         this.list = response.data.list
         this.total = response.data.total
+        // debugger;
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -186,26 +211,79 @@ export default {
       this.page = 1
       this.getDataBaseList()
     },
+    resetTemp() {
+      this.dataBase = {
+        dataBaseName: '',
+        dataBaseType: 0,
+        dataBaseUrl: '',
+        userName: '',
+        password: ''
+      }
+    },
     handleCreate() {
+      this.resetTemp()
+      this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataBase'].clearValidate()
+      })
     },
     handleDelete(data) {
       alert('删除id' + data)
     },
-    dateBaseAdd() {
-      console.log(this.dataBase)
+    createData(dataBase) {
+      this.$refs[dataBase].validate((valid) => {
+        if (valid) {
+          createDataBase(this.dataBase).then(response => {
+            this.resetForm(dataBase)
+            this.$notify({
+              title: '成功',
+              message: '创建成功',
+              type: 'success',
+              duration: 2000
+            })
+            this.getDataBaseList()
+          })
+        } else {
+          alert('error submit!!')
+          return false
+        }
+      })
     },
-    handleUpdate(data) {
+    updateData(dataBase) {
+      this.$refs[dataBase].validate((valid) => {
+        if (valid) {
+          updateDataBase(this.dataBase).then(response => {
+            this.resetForm(dataBase)
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+            this.getDataBaseList()
+          })
+        } else {
+          alert('error submit!!')
+          return false
+        }
+      })
+    },
+    resetForm(dataBase) {
+      this.dialogFormVisible = false
+      this.$refs[dataBase].resetFields()
+    },
+    handleUpdate(dataBase) {
+      this.dialogStatus = 'update'
+      this.dataBase = Object.assign({}, dataBase) // copy obj
       this.dialogFormVisible = true
-      this.dataBase = data
+      this.$nextTick(() => {
+        this.$refs['dataBase'].clearValidate()
+      })
     },
     handleReset() {
       this.listQuery = {}
       this.getDataBaseList()
-    },
-    dateBaseCancel() {
-      this.dialogFormVisible = false
-      this.dataBase = {}
     }
   }
 }

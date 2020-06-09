@@ -7,3 +7,17 @@ export function getDataBaseList(data, page, limit) {
     data
   })
 }
+export function createDataBase(data) {
+  return request({
+    url: '/api/data/base',
+    method: 'post',
+    data
+  })
+}
+export function updateDataBase(data) {
+  return request({
+    url: '/api/data/base',
+    method: 'put',
+    data
+  })
+}
