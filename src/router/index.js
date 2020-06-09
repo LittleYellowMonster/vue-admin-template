@@ -58,14 +58,14 @@ export const constantRoutes = [
   {
     path: '/system',
     component: Layout,
-    redirect: '/system/table',
+    redirect: '/system/database',
     name: 'System',
     meta: { title: '系统管理', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
+        path: 'database',
+        name: 'Database',
+        component: () => import('@/views/database/index'),
         meta: { title: '数据库管理', icon: 'table' }
       },
       {

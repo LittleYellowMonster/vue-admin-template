@@ -125,7 +125,12 @@
       >
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button style="margin-right: 10px;" type="danger" size="small" icon="el-icon-delete" @click="handleDelete(scope.row.id)">删除</el-button>
+          <el-popconfirm
+            title="确定删除吗？"
+            @onConfirm="handleDelete(scope.row.id)"
+          >
+            <el-button slot="reference" style="margin-right: 10px;" type="danger" size="small" icon="el-icon-delete">删除</el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -135,7 +140,7 @@
 </template>
 
 <script>
-import { getDataBaseList, createDataBase, updateDataBase } from '@/api/table'
+import { getDataBaseList, createDataBase, updateDataBase, deleteDataBase } from '@/api/database'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -174,7 +179,7 @@ export default {
       rules: {
         dataBaseName: [
           { required: true, message: '名称不能为空', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { min: 2, max: 9, message: '长度在 2 到 9 个字符', trigger: 'blur' }
         ],
         dataBaseUrl: [
           { required: true, message: '地址不能为空', trigger: 'blur' }
@@ -229,7 +234,15 @@ export default {
       })
     },
     handleDelete(data) {
-      alert('删除id' + data)
+      deleteDataBase(data).then(response => {
+        this.$notify({
+          title: '成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.getDataBaseList()
+      })
     },
     createData(dataBase) {
       this.$refs[dataBase].validate((valid) => {
@@ -245,7 +258,6 @@ export default {
             this.getDataBaseList()
           })
         } else {
-          alert('error submit!!')
           return false
         }
       })
@@ -264,7 +276,6 @@ export default {
             this.getDataBaseList()
           })
         } else {
-          alert('error submit!!')
           return false
         }
       })

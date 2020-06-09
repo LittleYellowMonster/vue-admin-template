@@ -21,3 +21,9 @@ export function updateDataBase(data) {
     data
   })
 }
+export function deleteDataBase(id) {
+  return request({
+    url: '/api/data/base/' + id,
+    method: 'delete'
+  })
+}
