@@ -1,9 +1,9 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" :style="'background-image:url('+ Background +');'">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h4 class="title">来艾后端开发辅助系统</h4>
       </div>
 
       <el-form-item prop="username">
@@ -54,6 +54,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import Background from '@/assets/images/background.jpg'
 
 export default {
   name: 'Login',
@@ -73,9 +74,10 @@ export default {
       }
     }
     return {
+      Background: Background,
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -129,7 +131,7 @@ export default {
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
-$bg:#283443;
+$bg: #120f43;
 $light_gray:#fff;
 $cursor: #fff;
 
@@ -175,7 +177,7 @@ $cursor: #fff;
 <style lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#889aa4;
-$light_gray:#eee;
+$light_gray: #58ee37;
 
 .login-container {
   min-height: 100%;
@@ -185,7 +187,7 @@ $light_gray:#eee;
 
   .login-form {
     position: relative;
-    width: 520px;
+    width: 530px;
     max-width: 100%;
     padding: 160px 35px 0;
     margin: 0 auto;
