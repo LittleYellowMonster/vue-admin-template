@@ -17,12 +17,31 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
       <el-form
         ref="adminInfo"
-        :rules="rules"
         :model="adminInfo"
         label-width="70px"
         size="medium"
         label-position="left"
       >
+        <el-form-item
+          ref="uploadElement"
+          label="头像"
+          prop="avatar"
+          :rules="[
+            { required: true, message: '头像不能为空', trigger: 'blur' }
+          ]"
+        >
+          <el-upload
+            class="avatar-uploader"
+            :action="uploadImg()"
+            :data="fileData"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+          >
+            <img v-if="adminInfo.avatar" :src="adminInfo.avatar" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
+          </el-upload>
+        </el-form-item>
         <el-form-item
           label="账户"
           prop="loginName"
@@ -140,6 +159,7 @@
 </template>
 
 <script>
+import { upload } from '@/utils/upload'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { getList, create, update, deleteById } from '@/api/admin'
@@ -160,18 +180,20 @@ export default {
       },
       dialogStatus: '',
       textMap: {
-        update: '编辑数据库',
-        create: '新增数据库'
+        update: '编辑管理员',
+        create: '新增管理员'
       },
       dialogFormVisible: false,
       adminInfo: {
+        avatar: '',
         loginName: '',
         password: '',
         realName: '',
         introduction: ''
       },
       list: [],
-      isPwdInputShow: false
+      isPwdInputShow: false,
+      fileData: {}
     }
   },
   created() {
@@ -272,8 +294,28 @@ export default {
       this.$refs[data].resetFields()
     },
     handleReset() {
-      this.temp = {}
+      this.resetTemp()
       this.getList()
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
+    uploadImg() {
+      upload(this.fileData).then(response => {
+        console.log('上传成功!!')
+      })
     }
   }
 }
@@ -281,5 +323,27 @@ export default {
 </script>
 
 <style scoped>
-
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
