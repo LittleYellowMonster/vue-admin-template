@@ -46,7 +46,7 @@ export function update(data) {
 }
 export function deleteById(id) {
   return request({
-    url: '/api/admin' + id,
+    url: '/api/admin/' + id,
     method: 'delete'
   })
 }

@@ -54,20 +54,6 @@ import Background from '@/assets/images/background.jpg'
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确的管理员账户'))
-      } else {
-        callback()
-      }
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('密码不少于6位'))
-      } else {
-        callback()
-      }
-    }
     return {
       Background: Background,
       loginForm: {
@@ -75,8 +61,16 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [
+          { required: true, trigger: 'blur', message: '用户名不能为空' },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' },
+          { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
+        ],
+        password: [
+          { required: true, trigger: 'blur', message: '密码不能为空' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+          { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
+        ]
       },
       loading: false,
       passwordType: 'password',

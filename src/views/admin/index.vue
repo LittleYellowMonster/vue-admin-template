@@ -2,7 +2,8 @@
   <div class="app-container">
     <!--搜索栏-->
     <div class="filter-container">
-      <el-input v-model="temp.loginName" clearable size="medium" placeholder="请输入账户名称" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.loginName" clearable size="medium" placeholder="请输入账户名称" style="width: 200px;" class="filter-item" />
+      <el-input v-model="listQuery.realName" clearable size="medium" placeholder="请输入真实姓名" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -46,7 +47,8 @@
           prop="loginName"
           :rules="[
             { required: true, message: '账户不能为空', trigger: 'blur' },
-            { min: 3, max: 9, message: '长度在 3 到 9 个字符', trigger: 'blur' }
+            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' },
+            { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
           ]"
         >
           <el-input
@@ -61,11 +63,13 @@
           prop="password"
           :rules="[
             { required: true, message: '密码不能为空', trigger: 'blur' },
-            { min: 6, max: 9, message: '长度在 6 到 9 个字符', trigger: 'blur' }
+            { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+             { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
           ]"
         >
           <el-input
             v-model="adminInfo.password"
+            show-password
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请设置密码"
           />
@@ -153,7 +157,7 @@
       </el-table-column>
     </el-table>
     <!-- 分页组件-->
-    <pagination v-show="total>0" :total="total" :page.sync="temp.page" :limit.sync="temp.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
 
@@ -171,10 +175,8 @@ export default {
       listLoading: true,
       page: 1,
       limit: 10,
-      temp: {
-        id: undefined,
+      listQuery: {
         loginName: '',
-        password: '',
         realName: ''
       },
       dialogStatus: '',
@@ -210,7 +212,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getList(this.temp, this.page, this.limit).then(response => {
+      getList(this.listQuery, this.page, this.limit).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         // debugger;
@@ -222,7 +224,7 @@ export default {
     },
     handleFilter() {
       this.page = 1
-      this.getDataBaseList()
+      this.getList()
     },
     resetTemp() {
       this.adminInfo = {
@@ -240,7 +242,7 @@ export default {
           type: 'success',
           duration: 2000
         })
-        this.getDataBaseList()
+        this.getList()
       })
     },
     handleCreate() {
@@ -302,7 +304,7 @@ export default {
       this.$refs[data].resetFields()
     },
     handleReset() {
-      this.resetTemp()
+      this.listQuery = {}
       this.getList()
     },
     handleAvatarSuccess(res, file) {
