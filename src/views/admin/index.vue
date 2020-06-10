@@ -32,11 +32,10 @@
         >
           <el-upload
             class="avatar-uploader"
-            :action="uploadImg()"
+            :action="imagesUploadApi"
             :data="fileData"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
           >
             <img v-if="adminInfo.avatar" :src="adminInfo.avatar" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -159,7 +158,7 @@
 </template>
 
 <script>
-import { upload } from '@/utils/upload'
+import { mapGetters } from 'vuex'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { getList, create, update, deleteById } from '@/api/admin'
@@ -193,8 +192,17 @@ export default {
       },
       list: [],
       isPwdInputShow: false,
-      fileData: {}
+      fileData: {
+        folderName: 'laiaiTest',
+        time: '1526712575167',
+        cipher: '338D36C27ECF4FBE302F2B2C42A6F1BF1213'
+      }
     }
+  },
+  computed: {
+    ...mapGetters([
+      'imagesUploadApi'
+    ])
   },
   created() {
     this.getList()
@@ -298,24 +306,8 @@ export default {
       this.getList()
     },
     handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
-    },
-    uploadImg() {
-      upload(this.fileData).then(response => {
-        console.log('上传成功!!')
-      })
+      console.log(res, file)
+      this.adminInfo = { ...this.adminInfo, avatar: res.ImgUrl }
     }
   }
 }
