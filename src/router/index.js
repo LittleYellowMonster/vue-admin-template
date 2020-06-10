@@ -69,6 +69,12 @@ export const constantRoutes = [
         meta: { title: '数据库管理', icon: 'table' }
       },
       {
+        path: 'adminInfo',
+        name: 'AdminInfo',
+        component: () => import('@/views/admin/index'),
+        meta: { title: '管理员列表', icon: 'user' }
+      },
+      {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
