@@ -64,7 +64,7 @@
           :rules="[
             { required: true, message: '密码不能为空', trigger: 'blur' },
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
-             { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
+            { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
           ]"
         >
           <el-input
@@ -75,7 +75,7 @@
           />
         </el-form-item>
         <el-form-item
-          label="真实姓名"
+          label="姓名"
           prop="realName"
           :rules="[
             { required: true, message: '真实姓名不能为空', trigger: 'blur' }
@@ -92,6 +92,18 @@
             v-model="adminInfo.introduction"
             :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="请输入简单个人介绍"
+          />
+        </el-form-item>
+        <el-form-item label="状态" align="left">
+          <el-switch
+            v-model="adminInfo.state"
+            :active-value="0"
+            :inactive-value="1"
+            style="display: block"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-text="开启"
+            inactive-text="禁用"
           />
         </el-form-item>
         <el-form-item>
@@ -129,7 +141,20 @@
           <span>{{ scope.row.realName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="简介" width="150" align="center">
+      <el-table-column label="状态" width="200" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.state"
+            :active-value="0"
+            :inactive-value="1"
+            style="display: block"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="changeEnabled(scope.row, scope.row.state)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="简介" width="300" align="center">
         <template slot-scope="scope">
           {{ scope.row.introduction }}
         </template>
@@ -165,7 +190,7 @@
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import { getList, create, update, deleteById } from '@/api/admin'
+import { getList, create, update, changeState, deleteById } from '@/api/admin'
 export default {
   components: { Pagination },
   directives: { waves },
@@ -177,7 +202,8 @@ export default {
       limit: 10,
       listQuery: {
         loginName: '',
-        realName: ''
+        realName: '',
+        state: 0
       },
       dialogStatus: '',
       textMap: {
@@ -189,8 +215,13 @@ export default {
         avatar: '',
         loginName: '',
         password: '',
+        state: 0,
         realName: '',
         introduction: ''
+      },
+      adminState: {
+        0: '启用',
+        1: '禁用'
       },
       list: [],
       isPwdInputShow: false,
@@ -225,6 +256,27 @@ export default {
     handleFilter() {
       this.page = 1
       this.getList()
+    },
+    // 改变状态
+    changeEnabled(data, val) {
+      this.$confirm('此操作将 "' + this.adminState[val] + '" ' + data.loginName + ', 是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        changeState(data.id, data.state).then(res => {
+          this.$notify({
+            title: this.adminState[val] + '成功',
+            message: '操作成功',
+            type: 'success',
+            duration: 2000
+          })
+        }).catch(() => {
+          data.state = !data.state
+        })
+      }).catch(() => {
+        data.state = !data.state
+      })
     },
     resetTemp() {
       this.adminInfo = {

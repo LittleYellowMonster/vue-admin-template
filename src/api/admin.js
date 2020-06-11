@@ -30,6 +30,7 @@ export function getList(data, page, limit) {
     data
   })
 }
+
 export function create(data) {
   return request({
     url: '/api/admin',
@@ -37,6 +38,7 @@ export function create(data) {
     data
   })
 }
+
 export function update(data) {
   return request({
     url: '/api/admin',
@@ -44,6 +46,14 @@ export function update(data) {
     data
   })
 }
+
+export function changeState(id, state) {
+  return request({
+    url: '/api/admin/changeState?id=' + id + '&state=' + state,
+    method: 'post'
+  })
+}
+
 export function deleteById(id) {
   return request({
     url: '/api/admin/' + id,
