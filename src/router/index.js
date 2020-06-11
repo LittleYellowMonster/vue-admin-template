@@ -51,10 +51,21 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '仪表盘', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
-
+  {
+    path: '/admin',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [{
+      path: 'center',
+      name: 'Center',
+      component: (resolve) => require(['@/views/admin/center'], resolve),
+      meta: { title: '个人中心' }
+    }]
+  },
   {
     path: '/system',
     component: Layout,

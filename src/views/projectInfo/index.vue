@@ -91,6 +91,13 @@
             placeholder="请输入kibana地址"
           />
         </el-form-item>
+        <el-form-item label="remark" align="center">
+          <el-input
+            v-model="projectInfo.remark"
+            :autosize="{ minRows: 1, maxRows: 3}"
+            placeholder="项目备注"
+          />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="dialogStatus==='create'?createData('projectInfo'):updateData('projectInfo')">确定</el-button>
           <el-button @click="dialogFormVisible = false">取消</el-button>
@@ -216,6 +223,11 @@
           </el-popover>
         </template>
       </el-table-column>
+      <el-table-column label="备注" width="200" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.remark }}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="创建时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time" />
@@ -288,7 +300,8 @@ export default {
         jenkinsAddress: '',
         apolloAddress: '',
         xxjobAddress: '',
-        kibanaAddress: ''
+        kibanaAddress: '',
+        remark: ''
       },
       environmentTypes,
       dialogStatus: '',
