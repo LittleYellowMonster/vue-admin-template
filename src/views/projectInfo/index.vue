@@ -3,7 +3,9 @@
     <!--搜索栏-->
     <div class="filter-container " style="height: 100px">
       <el-input v-model="listQuery.projectName" clearable size="medium" placeholder="请输入项目名称" style="width: 200px;" class="filter-item" />
-      <el-input v-model="listQuery.environment" clearable size="medium" placeholder="请输入环境" style="width: 200px;" class="filter-item" />
+      <el-select v-model="listQuery.environment" placeholder="请选择环境" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in environmentTypes" :key="item.type" :label="item.envName" :value="item.type" />
+      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -13,10 +15,10 @@
       <el-button style="margin-left: 10px;" type="warning" icon="el-icon-refresh" @click="handleReset">
         重置
       </el-button>
-      <a href="https://fe.lai-ai.com/teamwork/project" target="_blank"><el-button style="margin-left: 10px;" type="primary" plain icon="el-icon-link" > 前端项目配置信息 </el-button></a>
+      <a href="https://fe.lai-ai.com/teamwork/project" target="_blank"><el-button style="margin-left: 10px;" type="primary" plain icon="el-icon-link"> 前端项目配置信息 </el-button></a>
     </div>
     <!--新增/编辑 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :show-close="false" width="30%">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :show-close="false" width="45%">
       <el-form
         ref="projectInfo"
         :model="projectInfo"
@@ -25,7 +27,7 @@
         label-position="left"
       >
         <el-form-item
-          label="项目名称"
+          label="名称"
           prop="projectName"
           :rules="[
             { required: true, message: '项目名称不能为空', trigger: 'blur' },
@@ -33,24 +35,23 @@
           ]"
         >
           <el-input
-            v-model="projectInfo.loginName"
+            v-model="projectInfo.projectName"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请设置项目名称"
           />
         </el-form-item>
         <el-form-item
-          label="swagger地址"
+          label="swagger"
           prop="swaggerAddress"
         >
           <el-input
             v-model="projectInfo.swaggerAddress"
-            show-password
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="输入项目swagger地址"
           />
         </el-form-item>
         <el-form-item
-          label="服务ip端口"
+          label="ip端口"
           prop="serverPort"
           :rules="[
             { required: true, message: '服务ip端口不能为空', trigger: 'blur' }
@@ -62,28 +63,28 @@
             placeholder="请输入服务ip端口"
           />
         </el-form-item>
-        <el-form-item label="jenkins地址" align="center">
+        <el-form-item label="jenkins" align="center">
           <el-input
             v-model="projectInfo.jenkinsAddress"
             :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="请输入jenkins地址"
           />
         </el-form-item>
-        <el-form-item label="apollo地址" align="center">
+        <el-form-item label="apollo" align="center">
           <el-input
             v-model="projectInfo.apolloAddress"
             :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="请输入apollo地址"
           />
         </el-form-item>
-        <el-form-item label="xx-job地址" align="center">
+        <el-form-item label="xx-job" align="center">
           <el-input
             v-model="projectInfo.xxjobAddress"
             :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="请输入xx-job地址"
           />
         </el-form-item>
-        <el-form-item label="日志查看地址" align="center">
+        <el-form-item label="kibana" align="center">
           <el-input
             v-model="projectInfo.kibanaAddress"
             :autosize="{ minRows: 1, maxRows: 3}"
@@ -122,7 +123,7 @@
       </el-table-column>
       <el-table-column label="项目环境" width="150" align="center" fixed="left">
         <template slot-scope="scope">
-          <span>{{ environmentType[scope.row.environment].name }}</span>
+          <span>{{ scope.row.environment | typeFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column label="jenkins地址" width="250" align="center">
@@ -176,7 +177,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="ip端口" width="300" align="center">
+      <el-table-column label="ip端口" width="200" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.serverPort }}</span>
         </template>
@@ -215,7 +216,7 @@
           </el-popover>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="创建时间" width="200">
+      <el-table-column align="center" label="创建时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.gmtCreate }}</span>
@@ -243,13 +244,30 @@
   </div>
 </template>
 
-<script>
+<script la>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { getPage, create, update, deleteById } from '@/api/projectInfo'
+
+const environmentTypes = [
+  { 'type': 1, 'envName': '开发(dev)' },
+  { 'type': 2, 'envName': '测试(sit)' },
+  { 'type': 3, 'envName': '预发(pre)' },
+  { 'type': 4, 'envName': '生产(prod)' }
+]
+// 查询枚举
+const environmentTypeKeyValue = environmentTypes.reduce((acc, cur) => {
+  acc[cur.type] = cur.envName
+  return acc
+}, {})
 export default {
   components: { Pagination },
   directives: { waves },
+  filters: {
+    typeFilter(type) {
+      return environmentTypeKeyValue[type]
+    }
+  },
   data() {
     return {
       total: 0,
@@ -272,17 +290,11 @@ export default {
         xxjobAddress: '',
         kibanaAddress: ''
       },
-      environmentType: [
-        { 'type': 0, 'name': '未知' },
-        { 'type': 1, 'name': '开发(dev)' },
-        { 'type': 2, 'name': '测试(sit)' },
-        { 'type': 3, 'name': '预发(pre)' },
-        { 'type': 4, 'name': '生产(prod)' }
-      ],
+      environmentTypes,
       dialogStatus: '',
       textMap: {
-        update: '编辑管理员',
-        create: '新增管理员'
+        update: '编辑项目信息',
+        create: '新增项目信息'
       },
       dialogFormVisible: false
     }
@@ -334,6 +346,12 @@ export default {
         kibanaAddress: ''
       }
     },
+    resetListQuery() {
+      this.listQuery = {
+        projectName: '',
+        environment: ''
+      }
+    },
     handleDelete(data) {
       deleteById(data).then(response => {
         this.$notify({
@@ -348,16 +366,15 @@ export default {
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
-      this.isPwdInputShow = true
       this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['adminInfo'].clearValidate()
+        this.$refs['projectInfo'].clearValidate()
       })
     },
     createData(data) {
       this.$refs[data].validate((valid) => {
         if (valid) {
-          create(this.adminInfo).then(response => {
+          create(this.projectInfo).then(response => {
             this.resetForm(data)
             this.$notify({
               title: '成功',
@@ -374,17 +391,16 @@ export default {
     },
     handleUpdate(data) {
       this.dialogStatus = 'update'
-      this.isPwdInputShow = false
-      this.adminInfo = Object.assign({}, data) // copy obj
+      this.projectInfo = Object.assign({}, data) // copy obj
       this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs['adminInfo'].clearValidate()
+        this.$refs['projectInfo'].clearValidate()
       })
     },
     updateData(data) {
       this.$refs[data].validate((valid) => {
         if (valid) {
-          update(this.adminInfo).then(response => {
+          update(this.projectInfo).then(response => {
             this.resetForm(data)
             this.$notify({
               title: '成功',
@@ -404,7 +420,7 @@ export default {
       this.$refs[data].resetFields()
     },
     handleReset() {
-      this.listQuery = {}
+      this.resetListQuery()
       this.getPage()
     },
     onCopy: function(e) {

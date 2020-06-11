@@ -145,6 +145,13 @@ import { getDataBaseList, createDataBase, updateDataBase, deleteDataBase } from 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
+const dataBaseTypes = [
+  { 'dataBaseType': 0, 'baseTypeName': 'Mysql' },
+  { 'dataBaseType': 1, 'baseTypeName': 'SqlServer' },
+  { 'dataBaseType': 2, 'baseTypeName': 'Postgresql' },
+  { 'dataBaseType': 3, 'baseTypeName': 'Oracle' }
+]
+
 export default {
   components: { Pagination },
   directives: { waves },
@@ -159,12 +166,7 @@ export default {
       },
       dialogFormVisible: false,
       list: [],
-      dataBaseTypes: [
-        { 'dataBaseType': 0, 'baseTypeName': 'Mysql' },
-        { 'dataBaseType': 1, 'baseTypeName': 'SqlServer' },
-        { 'dataBaseType': 2, 'baseTypeName': 'Postgresql' },
-        { 'dataBaseType': 3, 'baseTypeName': 'Oracle' }
-      ],
+      dataBaseTypes,
       dataBase: {
         dataBaseName: '',
         dataBaseType: 0,
