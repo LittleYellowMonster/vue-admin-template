@@ -1,31 +1,16 @@
 import request from '@/utils/request'
 
-export function login(data) {
-  // console.log(JSON.parse(this.date) + '=======')
+export function getPage(data, page, limit) {
   return request({
-    url: '/api/admin/login',
+    url: '/api/project/info/page?current=' + page + '&pageSize=' + limit,
     method: 'post',
     data
   })
 }
 
-export function getInfo() {
+export function getList(data) {
   return request({
-    url: '/api/admin/info',
-    method: 'get'
-  })
-}
-
-export function logout() {
-  return request({
-    url: '/api/admin/logout',
-    method: 'post'
-  })
-}
-
-export function getList(data, page, limit) {
-  return request({
-    url: '/api/admin/page?current=' + page + '&pageSize=' + limit,
+    url: '/api/project/info/list',
     method: 'post',
     data
   })
@@ -33,7 +18,7 @@ export function getList(data, page, limit) {
 
 export function create(data) {
   return request({
-    url: '/api/admin',
+    url: '/api/project/info',
     method: 'post',
     data
   })
@@ -41,22 +26,15 @@ export function create(data) {
 
 export function update(data) {
   return request({
-    url: '/api/admin',
+    url: '/api/project/info',
     method: 'put',
     data
   })
 }
 
-export function changeState(id, state) {
-  return request({
-    url: '/api/admin/changeState?id=' + id + '&state=' + state,
-    method: 'post'
-  })
-}
-
 export function deleteById(id) {
   return request({
-    url: '/api/admin/' + id,
+    url: '/api/project/info' + id,
     method: 'delete'
   })
 }
