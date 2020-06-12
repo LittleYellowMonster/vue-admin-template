@@ -17,6 +17,16 @@
                   @crop-upload-success="cropUploadSuccess"
                 />
               </div>-->
+              <el-upload
+                class="avatar-uploader"
+                :action="imagesUploadApi"
+                :data="fileData"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+              >
+                <img v-if="adminInfo.avatar" :src="adminInfo.avatar" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
             </div>
             <ul class="user-info">
               <li><div style="height: 100%"><svg-icon icon-class="login" /> 登录账号<div class="user-right">{{ adminInfo.loginName }}</div></div></li>
@@ -98,27 +108,72 @@
     </el-row>
   </div>
 </template>
+<script>
+import { mapGetters } from 'vuex'
 import { getToken } from '@/utils/auth'
 import store from '@/store'
-<script>
 export default {
   data() {
     return {
       adminInfo: {
         'loginName': '',
-        'realName': ''
+        'realName': '',
+        'avatar': ''
+      },
+      fileData: {
+        folderName: 'laiaiTest',
+        time: '1526712575167',
+        cipher: '338D36C27ECF4FBE302F2B2C42A6F1BF1213'
       }
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'imagesUploadApi'
+    ])
+  },
+  created() {
+    this.adminInfo = { id: this.user.id, nickName: this.user.nickName, gender: this.user.gender, phone: this.user.phone }
+    store.dispatch('GetInfo').then(() => {})
+  },
+  methods: {
+    handleAvatarSuccess(res, file) {
+      console.log(res, file)
+      this.adminInfo = { ...this.adminInfo, avatar: res.ImgUrl }
     }
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
   .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+/*  .avatar {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-  }
+  }*/
   .user-info {
     padding-left: 0;
     list-style: none;
