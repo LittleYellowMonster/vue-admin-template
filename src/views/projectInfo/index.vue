@@ -93,6 +93,7 @@
         </el-form-item>
         <el-form-item label="remark" align="center">
           <el-input
+            type="textarea"
             v-model="projectInfo.remark"
             :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="项目备注"

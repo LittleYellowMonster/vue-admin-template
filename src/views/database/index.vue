@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--搜索栏-->
-    <div class="filter-container">
+    <div class="filter-container" style="height: 100px">
       <el-input v-model="listQuery.dataBaseName" clearable size="medium" placeholder="请输入数据库名称" style="width: 200px;" class="filter-item" />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
@@ -33,10 +33,11 @@
         <el-form-item label="地址" prop="dataBaseUrl">
           <el-input
             v-model="dataBase.dataBaseUrl"
+            style="width: 300px"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入数据库地址"
           >
-            <template slot="prepend">Http://</template>
+            <el-button :loading="loading" type="success" @click="testConnectDatabase">测试</el-button>
           </el-input>
         </el-form-item>
         <el-form-item label="类型" prop="dataBaseType">
@@ -77,6 +78,10 @@
     <!--表格渲染-->
     <el-table
       v-loading="listLoading"
+      height="630px"
+      :row-style="{height:'40px'}"
+      :cell-style="{padding:'20px'}"
+      style="font-size: 15px"
       :data="list"
       element-loading-text="Loading"
       fit
@@ -141,7 +146,7 @@
 </template>
 
 <script>
-import { getDataBaseList, createDataBase, updateDataBase, deleteDataBase } from '@/api/database'
+import { getDataBaseList, createDataBase, updateDataBase, deleteDataBase, testDbConnect } from '@/api/database'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -164,13 +169,14 @@ export default {
       listQuery: {
         dataBaseName: ''
       },
+      loading: false,
       dialogFormVisible: false,
       list: [],
       dataBaseTypes,
       dataBase: {
         dataBaseName: '',
         dataBaseType: 0,
-        dataBaseUrl: '',
+        dataBaseUrl: 'jdbc:mysql://',
         userName: '',
         password: ''
       },
@@ -185,7 +191,8 @@ export default {
           { min: 2, max: 9, message: '长度在 2 到 9 个字符', trigger: 'blur' }
         ],
         dataBaseUrl: [
-          { required: true, message: '地址不能为空', trigger: 'blur' }
+          { required: true, message: '地址不能为空', trigger: 'blur' },
+          { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
         ],
         dataBaseType: [
           { required: true, message: '请选择类型', trigger: 'change' }
@@ -227,6 +234,25 @@ export default {
         userName: '',
         password: ''
       }
+    },
+    testConnectDatabase() {
+      this.$refs['dataBase'].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          testDbConnect(this.dataBase).then((res) => {
+            this.loading = false
+            console.log('连接结果如下===>' + res)
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          }).catch(() => {
+            this.loading = false
+          })
+        }
+      })
     },
     handleCreate() {
       this.resetTemp()

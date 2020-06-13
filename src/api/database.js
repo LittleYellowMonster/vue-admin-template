@@ -27,3 +27,10 @@ export function deleteDataBase(id) {
     method: 'delete'
   })
 }
+export function testDbConnect(data) {
+  return request({
+    url: 'api/data/base/testConnect',
+    method: 'post',
+    data
+  })
+}
