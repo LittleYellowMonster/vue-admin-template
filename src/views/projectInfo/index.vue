@@ -17,7 +17,7 @@
       </el-button>
       <a href="https://fe.lai-ai.com/teamwork/project" target="_blank"><el-button style="margin-left: 10px;" type="primary" plain icon="el-icon-link"> 前端项目配置信息 </el-button></a>
     </div>
-    <!--新增/编辑 -->
+    <!--新增/编辑/查看 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :show-close="false" width="45%">
       <el-form
         ref="projectInfo"
@@ -99,7 +99,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="dialogStatus==='create'?createData('projectInfo'):updateData('projectInfo')">确定</el-button>
+          <el-button v-if="isShowBtn" type="primary" @click="dialogStatus==='create'?createData('projectInfo'):updateData('projectInfo')">确定</el-button>
           <el-button @click="dialogFormVisible = false">取消</el-button>
         </el-form-item>
       </el-form>
@@ -236,11 +236,12 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        width="230"
+        width="300"
         align="center"
         fixed="right"
       >
         <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-opportunity" size="small" @click="handleView(scope.row)">查看</el-button>
           <el-button type="primary" icon="el-icon-edit" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
           <el-popconfirm
             title="确定删除吗？"
@@ -304,8 +305,10 @@ export default {
         remark: ''
       },
       environmentTypes,
+      isShowBtn: true,
       dialogStatus: '',
       textMap: {
+        view: '查看项目信息',
         update: '编辑项目信息',
         create: '新增项目信息'
       },
@@ -379,6 +382,7 @@ export default {
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
+      this.isShowBtn = true
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['projectInfo'].clearValidate()
@@ -402,8 +406,15 @@ export default {
         }
       })
     },
+    handleView(data) {
+      this.dialogStatus = 'view'
+      this.isShowBtn = false
+      this.projectInfo = Object.assign({}, data) // copy obj
+      this.dialogFormVisible = true
+    },
     handleUpdate(data) {
       this.dialogStatus = 'update'
+      this.isShowBtn = true
       this.projectInfo = Object.assign({}, data) // copy obj
       this.dialogFormVisible = true
       this.$nextTick(() => {

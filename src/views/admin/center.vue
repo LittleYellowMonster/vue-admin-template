@@ -24,13 +24,13 @@
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
               >
-                <img v-if="adminInfo.avatar" :src="adminInfo.avatar" class="avatar">
+                <img v-if="user.avatar" :src="user.avatar" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon" />
               </el-upload>
             </div>
             <ul class="user-info">
-              <li><div style="height: 100%"><svg-icon icon-class="login" /> 登录账号<div class="user-right">{{ adminInfo.loginName }}</div></div></li>
-              <li><svg-icon icon-class="user1" /> 用户昵称 <div class="user-right">{{ adminInfo.realName }}</div></li>
+              <li><div style="height: 100%"><svg-icon icon-class="login" /> 登录账号<div class="user-right">{{ user.loginName }}</div></div></li>
+              <li><svg-icon icon-class="user1" /> 用户昵称 <div class="user-right">{{ user.realName }}</div></li>
               <li>
                 <svg-icon icon-class="anq" /> 安全设置
                 <div class="user-right">
@@ -110,9 +110,20 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
-import { getToken } from '@/utils/auth'
 import store from '@/store'
 export default {
+  props: {
+    user: {
+      type: Object,
+      default: () => {
+        return {
+          name: '',
+          email: '',
+          avatar: ''
+        }
+      }
+    }
+  },
   data() {
     return {
       adminInfo: {
