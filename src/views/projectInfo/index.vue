@@ -93,8 +93,8 @@
         </el-form-item>
         <el-form-item label="remark" align="center">
           <el-input
-            type="textarea"
             v-model="projectInfo.remark"
+            type="textarea"
             :autosize="{ minRows: 1, maxRows: 3}"
             placeholder="项目备注"
           />
@@ -258,7 +258,7 @@
   </div>
 </template>
 
-<script la>
+<script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { getPage, create, update, deleteById } from '@/api/projectInfo'

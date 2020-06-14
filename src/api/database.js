@@ -34,3 +34,18 @@ export function testDbConnect(data) {
     data
   })
 }
+export function getTablePage(data, page, limit) {
+  return request({
+    url: '/api/data/base//table/page?current=' + page + '&pageSize=' + limit,
+    method: 'post',
+    data
+  })
+}
+
+export function tableListSync(data) {
+  return request({
+    url: '/api/data/base/sync',
+    method: 'post',
+    data
+  })
+}
