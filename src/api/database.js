@@ -36,7 +36,7 @@ export function testDbConnect(data) {
 }
 export function getTablePage(data, page, limit) {
   return request({
-    url: '/api/data/base//table/page?current=' + page + '&pageSize=' + limit,
+    url: '/api/data/base/table/page?current=' + page + '&pageSize=' + limit,
     method: 'post',
     data
   })

@@ -58,7 +58,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar,introduction } = data
+        const { name, avatar, introduction } = data
 
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
