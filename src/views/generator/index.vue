@@ -31,13 +31,12 @@
         label="表名称"
         width="250"
         align="center"
-        fixed="left"
       >
         <template slot-scope="scope">
           {{ scope.row.tableName }}
         </template>
       </el-table-column>
-      <el-table-column label="表备注" width="250" align="center" fixed="left">
+      <el-table-column label="表备注" width="250" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.tableComment }}</span>
         </template>
