@@ -92,6 +92,12 @@ export const constantRoutes = [
         meta: { title: '项目信息', icon: 'education' }
       },
       {
+        path: 'projectConfig',
+        name: 'ProjectConfig',
+        component: () => import('@/views/projectConfig/index'),
+        meta: { title: '工程配置', icon: 'education' }
+      },
+      {
         path: 'generator',
         name: 'Generator',
         component: () => import('@/views/generator/index'),
