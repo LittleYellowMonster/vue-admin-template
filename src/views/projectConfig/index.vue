@@ -58,7 +58,7 @@
             placeholder="请输入版本"
           />
         </el-form-item>
-        <el-form-item label="kibana" align="center">
+        <el-form-item label="添加权限" align="center">
           <el-input
             v-model="projectConfig.isRbac"
             :autosize="{ minRows: 1, maxRows: 3}"
