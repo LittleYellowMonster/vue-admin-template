@@ -26,7 +26,7 @@ export function update(data) {
 
 export function deleteById(id) {
   return request({
-    url: '/api/project/config' + id,
+    url: '/api/project/config/' + id,
     method: 'delete'
   })
 }

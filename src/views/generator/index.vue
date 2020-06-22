@@ -13,6 +13,9 @@
       <el-button style="margin-left: 10px;" type="primary" icon="el-icon-sort" @click="handleSyc">
         同步
       </el-button>
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-s-tools" @click="handleProjecConfig">
+        工程配置
+      </el-button>
     </div>
     <!--表格渲染-->
     <el-table
