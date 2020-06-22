@@ -36,8 +36,7 @@
             style="width: 300px"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入数据库地址"
-          >
-          </el-input>
+          />
           <el-button :loading="loading" type="success" @click="testConnectDatabase">测试</el-button>
         </el-form-item>
         <el-form-item label="类型" prop="dataBaseType">
@@ -192,8 +191,7 @@ export default {
           { min: 2, max: 9, message: '长度在 2 到 9 个字符', trigger: 'blur' }
         ],
         dataBaseUrl: [
-          { required: true, message: '地址不能为空', trigger: 'blur' },
-          { pattern: /^[A-Za-z0-9]+$/, message: '只允许英文和数字' }
+          { required: true, message: '地址不能为空', trigger: 'blur' }
         ],
         dataBaseType: [
           { required: true, message: '请选择类型', trigger: 'change' }
@@ -231,7 +229,7 @@ export default {
       this.dataBase = {
         dataBaseName: '',
         dataBaseType: 0,
-        dataBaseUrl: '',
+        dataBaseUrl: 'jdbc:mysql://',
         userName: '',
         password: ''
       }
@@ -245,7 +243,7 @@ export default {
             console.log('连接结果如下===>' + res)
             this.$notify({
               title: '成功',
-              message: '更新成功',
+              message: '链接成功',
               type: 'success',
               duration: 2000
             })
