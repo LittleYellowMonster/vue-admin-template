@@ -146,7 +146,6 @@
         label="操作"
         width="300"
         align="center"
-        fixed="right"
       >
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-opportunity" size="small" @click="handleView(scope.row)">查看</el-button>
