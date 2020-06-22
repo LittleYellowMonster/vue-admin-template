@@ -115,9 +115,14 @@
     <!--表格渲染-->
     <el-table
       v-loading="listLoading"
+      height="630px"
+      :row-style="{height:'40px'}"
+      :cell-style="{padding:'20px'}"
+      style="font-size: 15px"
       :data="list"
       element-loading-text="Loading"
       fit
+      border
       highlight-current-row
       size="medium"
     >

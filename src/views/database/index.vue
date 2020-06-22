@@ -37,8 +37,8 @@
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入数据库地址"
           >
-            <el-button :loading="loading" type="success" @click="testConnectDatabase">测试</el-button>
           </el-input>
+          <el-button :loading="loading" type="success" @click="testConnectDatabase">测试</el-button>
         </el-form-item>
         <el-form-item label="类型" prop="dataBaseType">
           <el-select
@@ -85,6 +85,7 @@
       :data="list"
       element-loading-text="Loading"
       fit
+      border
       highlight-current-row
       size="medium"
     >
