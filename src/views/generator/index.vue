@@ -66,7 +66,11 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-button type="info" icon="el-icon-view" size="small" @click="handleView(scope.row)">预览</el-button>
+          <el-button type="primary" icon="el-icon-view" size="small">
+            <router-link :to="'@/views/generator/preview/' + scope.row.tableName">
+              预览
+            </router-link>
+          </el-button>
           <el-button type="primary" icon="el-icon-box" size="small" @click="handleUpdate(scope.row)">生成</el-button>
           <el-button type="warning" icon="el-icon-download" size="small" @click="handleDownload(scope.row)">下载</el-button>
         </template>

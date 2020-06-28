@@ -8,19 +8,27 @@
 
 <script>
 import Java from '@/components/JavaEdit/index'
-import { generator } from '@/api/generator/generator'
+import { generator } from '@/api/autoCode'
 export default {
   name: 'Preview',
   components: { Java },
   data() {
     return {
-      data: null, height: '', activeName: 'Entity'
+      data: null,
+      height: '',
+      activeName: 'Entity',
+      tableCode: {
+        projectConfigId: 1,
+        dataBaseId: 1,
+        tableName: ''
+      }
     }
   },
   created() {
     this.height = document.documentElement.clientHeight - 180 + 'px'
     const tableName = this.$route.params.tableName
-    generator(tableName, 1).then(data => {
+    this.tableCode.tableName = tableName
+    generator(this.tableCode).then(data => {
       this.data = data
     }).catch(() => {
       this.$router.go(-1)
