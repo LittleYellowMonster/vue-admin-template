@@ -67,7 +67,7 @@
       >
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-view" size="small">
-            <router-link :to="'@/views/generator/preview/' + scope.row.tableName">
+            <router-link :to="'/generator/preview/' + scope.row.tableName">
               预览
             </router-link>
           </el-button>

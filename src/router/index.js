@@ -98,10 +98,27 @@ export const constantRoutes = [
         meta: { title: '工程配置', icon: 'education' }
       },
       {
-        path: 'generator',
+        path: '/generator',
+        component: Layout,
+        redirect: '/generator/list',
         name: 'Generator',
-        component: () => import('@/views/generator/index'),
-        meta: { title: '代码生成', icon: 'star' }
+        meta: {
+          title: '代码生成',
+          icon: 'star'
+        },
+        children: [
+          {
+            path: 'list',
+            component: () => import('@/views/generator/list'),
+            name: 'GeneratorList',
+            meta: { title: '表列表', activeMenu: '/generator/list' }
+          },
+          {
+            path: '/generator/preview/*',
+            component: () => import('@/views/generator/preview'),
+            meta: { title: '代码预览' }
+          }
+        ]
       },
       {
         path: 'tree',
