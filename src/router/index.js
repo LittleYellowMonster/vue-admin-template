@@ -107,7 +107,7 @@ export const constantRoutes = [
             path: 'preview/:tableName',
             component: () => import('@/views/generator/preview'),
             name: 'Preview',
-            meta: { title: '预览' },
+            meta: { title: '预览', noCache: true, activeMenu: '/generator/list' },
             hidden: true
           },
           {

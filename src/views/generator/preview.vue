@@ -32,8 +32,8 @@ export default {
       this.list = data.data
       console.log('list===' + this.list)
     }).catch(() => {
-      // this.$router.go(-1)
       console.log('获取失败')
+      this.$router.go(-1)
     })
   }
 }
