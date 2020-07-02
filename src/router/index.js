@@ -102,21 +102,19 @@ export const constantRoutes = [
         component: Layout,
         redirect: '/generator/list',
         name: 'Generator',
-        meta: {
-          title: '代码生成',
-          icon: 'star'
-        },
         children: [
+          {
+            path: 'preview/:tableName',
+            component: () => import('@/views/generator/preview'),
+            name: 'Preview',
+            meta: { title: '预览' },
+            hidden: true
+          },
           {
             path: 'list',
             component: () => import('@/views/generator/list'),
             name: 'GeneratorList',
-            meta: { title: '表列表', activeMenu: '/generator/list' }
-          },
-          {
-            path: '/generator/preview/*',
-            component: () => import('@/views/generator/preview'),
-            meta: { title: '代码预览' }
+            meta: { title: '代码生成', icon: 'star' }
           }
         ]
       },
