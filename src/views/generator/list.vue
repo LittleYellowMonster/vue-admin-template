@@ -71,7 +71,7 @@
               预览
             </router-link>
           </el-button>
-          <el-button type="primary" icon="el-icon-box" size="small" @click="handleUpdate(scope.row)">生成</el-button>
+          <el-button type="primary" icon="el-icon-box" size="small" @click="handleCreate(scope.row.tableName)">生成</el-button>
           <el-button type="warning" icon="el-icon-download" size="small" @click="handleDownload(scope.row)">下载</el-button>
         </template>
       </el-table-column>
@@ -85,6 +85,7 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import { getTablePage } from '@/api/database'
+import { createCode } from '@/api/autoCode'
 export default {
   components: { Pagination },
   directives: { waves },
@@ -106,6 +107,12 @@ export default {
         engine: '',
         tableCollation: ''
       },
+      tableCode: {
+        projectConfigId: 1,
+        dataBaseId: 1,
+        tableName: ''
+      },
+      downLoadUrl: '',
       dialogStatus: '',
       textMap: {
         view: '查看项目信息',
@@ -140,7 +147,18 @@ export default {
     },
     handleSyc() {},
     handleProjecConfig() {},
-    handleUpdate() {},
+    handleCreate(tableName) {
+      this.tableCode.tableName = tableName
+      createCode(this.tableCode).then(response => {
+        this.$notify({
+          title: '成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+        this.downLoadUrl = response.data.data
+      })
+    },
     handleDownload() {}
   }
 }

@@ -7,3 +7,13 @@ export function generator(data) {
     data
   })
 }
+export function createCode(data) {
+  return request({
+    url: '/api/generator/createCode',
+    method: 'post',
+    data
+  })
+}
+
+
+
