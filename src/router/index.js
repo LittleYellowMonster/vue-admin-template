@@ -101,13 +101,17 @@ export const constantRoutes = [
         path: '/generator',
         component: Layout,
         redirect: '/generator/list',
-        name: 'Generator',
+        name: 'GeneratorList',
+        meta: {
+          title: '表列表',
+          icon: 'star'
+        },
         children: [
           {
             path: 'preview/:tableName',
             component: () => import('@/views/generator/preview'),
             name: 'Preview',
-            meta: { title: '预览', noCache: true, activeMenu: '/generator/list' },
+            meta: { title: '代码预览', noCache: true, activeMenu: '/generator/list' },
             hidden: true
           },
           {
@@ -117,16 +121,16 @@ export const constantRoutes = [
             meta: { title: '代码生成', icon: 'star' }
           }
         ]
-      },
-      {
+      }
+    /*  {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
         meta: { title: 'Tree', icon: 'tree' }
-      }
+      }*/
     ]
   },
-  {
+  /* {
     path: '/form',
     component: Layout,
     children: [
@@ -206,7 +210,7 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
-  },
+  },*/
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

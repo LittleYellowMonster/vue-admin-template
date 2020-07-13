@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import { getDataBaseList, createDataBase, updateDataBase, deleteDataBase, testDbConnect } from '@/api/database'
+import { getDataBasePage, createDataBase, updateDataBase, deleteDataBase, testDbConnect } from '@/api/database'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
@@ -211,7 +211,7 @@ export default {
   methods: {
     getDataBaseList() {
       this.listLoading = true
-      getDataBaseList(this.listQuery, this.page, this.limit).then(response => {
+      getDataBasePage(this.listQuery, this.page, this.limit).then(response => {
         this.list = response.data.list
         this.total = response.data.total
         // debugger;

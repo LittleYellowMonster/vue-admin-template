@@ -16,66 +16,80 @@
       <el-button style="margin-left: 10px;" type="primary" icon="el-icon-s-tools" @click="handleProjecConfig">
         工程配置
       </el-button>
+      <el-select v-model="dataBaseId" placeholder="请选择数据库" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in dataBaseList" :key="item.id" :label="item.dataBaseName" :value="item.id" />
+      </el-select>
+    </div>
+    <!--按钮-->
+    <div style="height: 60px">
+      <el-button style="margin-left: 10px;" type="primary" icon="el-icon-box" @click="handleBatchCreate">
+        批量生成
+      </el-button>
     </div>
     <!--表格渲染-->
     <el-table
+      ref="multipleTable"
       v-loading="listLoading"
       height="630px"
       :row-style="{height:'40px'}"
       :cell-style="{padding:'20px'}"
       style="font-size: 15px"
       :data="list"
+      tooltip-effect="dark"
       element-loading-text="Loading"
-      fit
-      border
       size="medium"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
-        label="表名称"
-        width="250"
-        align="center"
+        type="selection"
+        width="200"
       >
-        <template slot-scope="scope">
-          {{ scope.row.tableName }}
-        </template>
-      </el-table-column>
-      <el-table-column label="表备注" width="250" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.tableComment }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="数据库引擎" width="200" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.engine }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="字符集编码" width="300" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.tableCollation }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="创建时间" width="300">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        width="350"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-view" size="small">
-            <router-link :to="'/generator/preview/'+scope.row.tableName">
-              预览
-            </router-link>
-          </el-button>
-          <el-button type="primary" icon="el-icon-box" size="small" @click="handleCreate(scope.row.tableName)">生成</el-button>
-          <el-button type="warning" icon="el-icon-download" size="small" @click="handleDownload(scope.row)">下载</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column
+          label="表名称"
+          width="250"
+          align="center"
+        >
+          <template slot-scope="scope">
+            {{ scope.row.tableName }}
+          </template>
+        </el-table-column>
+        <el-table-column label="表备注" width="250" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.tableComment }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="数据库引擎" width="200" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.engine }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="字符集编码" width="300" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.tableCollation }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="创建时间" width="300">
+          <template slot-scope="scope">
+            <i class="el-icon-time" />
+            <span>{{ scope.row.createTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="350"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <el-button type="primary" icon="el-icon-view" size="small">
+              <router-link :to="'/generator/preview/'+scope.row.tableName">
+                预览
+              </router-link>
+            </el-button>
+            <el-button type="primary" icon="el-icon-box" size="small" @click="handleCreate(scope.row.tableName)">生成</el-button>
+            <el-button type="warning" icon="el-icon-download" size="small" @click="handleDownload(scope.row)">下载</el-button>
+          </template>
+        </el-table-column>
+      </el-table-column></el-table>
     <!-- 分页组件-->
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getTablePage" />
   </div>
@@ -84,7 +98,7 @@
 <script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import { getTablePage } from '@/api/database'
+import { getTablePage, getDataBaseList } from '@/api/database'
 import { createCode } from '@/api/autoCode'
 export default {
   components: { Pagination },
@@ -100,6 +114,8 @@ export default {
         tableComment: ''
       },
       list: [],
+      dataBaseId: undefined,
+      dataBaseList: [],
       TableInfo: {
         tableName: '',
         tableComment: '',
@@ -119,13 +135,20 @@ export default {
         update: '编辑项目信息',
         create: '新增项目信息'
       },
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      multipleSelection: []
     }
   },
   created() {
+    this.getDataBaseList()
     this.getTablePage()
   },
   methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      const tableNames = this.multipleSelection.map(item => item.tableName)
+      console.log(tableNames)
+    },
     getTablePage() {
       this.listLoading = true
       getTablePage(this.listQuery, this.page, this.limit).then(response => {
@@ -136,6 +159,11 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 0.5 * 1000)
+      })
+    },
+    getDataBaseList() {
+      getDataBaseList().then(response => {
+        this.dataBaseList = response.data
       })
     },
     handleFilter() {
@@ -158,6 +186,9 @@ export default {
         })
         this.downLoadUrl = response.data.data
       })
+    },
+    handleBatchCreate() {
+      console.log('批量生成')
     },
     handleDownload() {}
   }
