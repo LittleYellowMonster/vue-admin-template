@@ -98,7 +98,8 @@
 <script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
-import { getTablePage, getDataBaseList } from '@/api/database'
+import { getDataBaseList } from '@/api/database'
+import { getTablePage } from '@/api/table'
 import { createCode } from '@/api/autoCode'
 export default {
   components: { Pagination },
@@ -110,6 +111,7 @@ export default {
       page: 1,
       limit: 10,
       listQuery: {
+        dataBaseId: '1',
         tableName: '',
         tableComment: ''
       },
@@ -140,7 +142,7 @@ export default {
     }
   },
   created() {
-    this.getDataBaseList()
+    // this.getDataBaseList()
     this.getTablePage()
   },
   methods: {
